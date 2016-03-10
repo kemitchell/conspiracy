@@ -62,7 +62,7 @@ function distribute(subject, body, callback) {
       var request =
         { method: 'POST',
           host: 'api.mailgun.com',
-          path: ( '/' + DOMAIN + '/messages' ),
+          path: ( '/v3/' + DOMAIN + '/messages' ),
           auth: ( 'api:' + API_KEY ),
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -71,7 +71,7 @@ function distribute(subject, body, callback) {
         .request(request)
         .on('response', function(response) {
           var status = response.statusCode
-          if (status == 201) {
+          if (status == 200) {
             callback() }
           else {
             callback(status) } })
