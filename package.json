@@ -1,4 +1,5 @@
 {
+  "name": "conspiracy",
   "private": true,
   "dependencies": {
     "busboy": "^0.2.12"

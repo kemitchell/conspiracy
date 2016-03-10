@@ -18,7 +18,7 @@ function handler(request, response) {
   if (request.method === 'POST') {
     readPostBody(request, function(error, fields) {
       var subject = fields.subject
-      var body = fields['body-plain']
+      var body = fields['stripped-text']
       distribute(subject, body, function(error) {
         if (error) {
           response.statusCode = 500
