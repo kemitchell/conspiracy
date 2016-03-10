@@ -8,11 +8,17 @@ var querystring = require('querystring')
 
 var DOMAIN = process.env.DOMAIN
 
+var API_KEY = process.env.MAILGUN_API_KEY
+
+var DISTRIBUTION_LIST =
+  ( process.env.DISTRIBUTION_LIST ||
+    path.join(process.cwd(), 'distribution_list') )
+
 function handler(request, response) {
   if (request.method === 'POST') {
     readPostBody(request, function(error, fields) {
       var subject = fields.subject
-      var body = fields['plain-body']
+      var body = fields['body-plain']
       distribute(subject, body, function(error) {
         if (error) {
           response.statusCode = 500
@@ -31,10 +37,6 @@ function readPostBody(request, callback) {
     fields[field] = value })
   .on('finish', function() {
     callback(null, fields) })}
-
-var DISTRIBUTION_LIST =
-  ( process.env.DISTRIBUTION_LIST ||
-    path.join(process.cwd(), 'distribution_list') )
 
 function readDistributionList(callback) {
   fs.readFile(DISTRIBUTION_LIST, 'utf8', function(error, data) {
@@ -55,6 +57,7 @@ function distribute(subject, body, callback) {
         { method: 'POST',
           host: 'api.mailgun.com',
           path: ( '/' + DOMAIN + '/messages' ),
+          auth: ( 'api:' + API_KEY ),
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Content-Length': Buffer.byteLength(body) } }
