@@ -18,7 +18,7 @@ var DISTRIBUTION_LIST =
 
 function handler(request, response) {
   var method = request.method
-  process.stdout.write(method)
+  process.stdout.write(method + '\n')
   if (method === 'POST') {
     readPostBody(request, function(error, fields) {
       var subject = fields.subject
@@ -31,7 +31,7 @@ function handler(request, response) {
           response.statusCode = 200
           response.end() } }) }) }
   else if (method === 'GET') {
-    response.end(( 'conspiracy' + VERSION )) }
+    response.end(( 'conspiracy ' + VERSION )) }
   else {
     response.statusCode = 405
     response.end() } }
