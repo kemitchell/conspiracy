@@ -15,7 +15,8 @@ var DISTRIBUTION_LIST =
     path.join(process.cwd(), 'distribution_list') )
 
 function handler(request, response) {
-  if (request.method === 'POST') {
+  var method = request.method
+  if (method === 'POST') {
     readPostBody(request, function(error, fields) {
       var subject = fields.subject
       var body = fields['stripped-text']
@@ -26,8 +27,10 @@ function handler(request, response) {
         else {
           response.statusCode = 200
           response.end() } }) }) }
+  else if (method === 'GET') {
+    response.end('conspiracy') }
   else {
-    response.statusCode = 415
+    response.statusCode = 405
     response.end() } }
 
 function readPostBody(request, callback) {
