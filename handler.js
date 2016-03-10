@@ -16,6 +16,7 @@ var DISTRIBUTION_LIST =
 
 function handler(request, response) {
   var method = request.method
+  process.stdout.write(method)
   if (method === 'POST') {
     readPostBody(request, function(error, fields) {
       var subject = fields.subject
