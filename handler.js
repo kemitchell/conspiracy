@@ -1,7 +1,7 @@
 module.exports = handler
 
 var path = require('path')
-var Busboy = require('Busboy')
+var Busboy = require('busboy')
 var fs = require('fs')
 var https = require('https')
 var querystring = require('querystring')

@@ -1,6 +1,7 @@
 {
   "name": "conspiracy",
   "private": true,
+  "bin": "server.js",
   "dependencies": {
     "busboy": "^0.2.12"
   },
