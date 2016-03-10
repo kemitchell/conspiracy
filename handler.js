@@ -6,6 +6,8 @@ var fs = require('fs')
 var https = require('https')
 var querystring = require('querystring')
 
+var VERSION = require('./package.json').version
+
 var DOMAIN = process.env.DOMAIN
 
 var API_KEY = process.env.MAILGUN_API_KEY
@@ -29,7 +31,7 @@ function handler(request, response) {
           response.statusCode = 200
           response.end() } }) }) }
   else if (method === 'GET') {
-    response.end('conspiracy') }
+    response.end(( 'conspiracy' + VERSION )) }
   else {
     response.statusCode = 405
     response.end() } }
