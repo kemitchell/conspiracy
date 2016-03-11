@@ -122,5 +122,13 @@ function distribute(members, subject, text, callback) {
     if (status == 200) {
       callback() }
     else {
-      callback(status) } })
+      var buffers = [ ]
+      response
+        .on('data', function(buffer) {
+          buffers.push(buffer) })
+        .once('end', function() {
+          var body = Buffer.concat(buffers).toString()
+          var error = new Error(body)
+          error.statusCode = status
+          callback(error) }) } })
   form.pipe(request) }
