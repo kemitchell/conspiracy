@@ -83,14 +83,19 @@ function readDistributionList(callback) {
     else {
       callback(null, data.toString().split('\n')) } }) }
 
-function distribute(subject, body, callback) {
+function distribute(subject, text, callback) {
   readDistributionList(function(error, recipients) {
     if (error) {
       callback(error) }
     else {
       var body = querystring.stringify(
         { from: ( 'remailer@' + DOMAIN ),
-          to: recipients.join(',') })
+          to: recipients.join(','),
+          subject: subject,
+          text: body,
+          'o:dkim': 'yes',
+          'o:tacking-clicks': 'no',
+          'o:tacking-opens': 'no' })
       var request =
         { method: 'POST',
           host: 'api.mailgun.net',
