@@ -59,11 +59,17 @@ function handler(request, response) {
 
 function readPostBody(request, callback) {
   var fields = { }
-  new Busboy({ headers: request.headers })
-  .on('field', function(field, value) {
-    fields[field] = value })
-  .on('finish', function() {
-    callback(null, fields) })}
+  var busboy
+  try {
+    busboy = new Busboy({ headers: request.headers }) }
+  catch (error) {
+    callback(error)
+    return }
+  busboy
+    .on('field', function(field, value) {
+      fields[field] = value })
+    .on('finish', function() {
+      callback(null, fields) })}
 
 function readDistributionList(callback) {
   fs.readFile(DISTRIBUTION_LIST, 'utf8', function(error, data) {
