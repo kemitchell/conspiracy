@@ -88,12 +88,10 @@ function distribute(subject, body, callback) {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Content-Length': Buffer.byteLength(body) } }
-      https
-        .request(request)
-        .on('response', function(response) {
-          var status = response.statusCode
-          if (status == 200) {
-            callback() }
-          else {
-            callback(status) } })
+      https.request(request, function(response) {
+        var status = response.statusCode
+        if (status == 200) {
+          callback() }
+        else {
+          callback(status) } })
         .end(body) } }) }
