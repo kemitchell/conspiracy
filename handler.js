@@ -35,9 +35,11 @@ function handler(request, response) {
       { event: 'end',
         status: response.statusCode }) })
   var method = request.method
-  process.stdout.write(method + '\n')
   if (method === 'POST') {
     readPostBody(request, function(error, fields) {
+      request.log.info(
+        { event: 'parsed fields',
+          fields: fields })
       var subject = fields.subject
       var body = fields['stripped-text']
       distribute(subject, body, function(error) {
@@ -46,6 +48,7 @@ function handler(request, response) {
           response.statusCode = 500
           response.end() }
         else {
+          request.log.info({ event: 'sent' })
           response.statusCode = 200
           response.end() } }) }) }
   else if (method === 'GET') {
