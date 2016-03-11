@@ -1,13 +1,13 @@
 module.exports = handler
 
-var bole = require('bole')
-var path = require('path')
 var Busboy = require('busboy')
+var FormData = require('form-data')
+var bole = require('bole')
 var fs = require('fs')
 var https = require('https')
-var uuid = require('uuid')
-var FormData = require('form-data')
+var path = require('path')
 var peoplestring = require('peoplestring-parse')
+var uuid = require('uuid')
 
 bole.output(
   [ { level: 'debug', stream: process.stdout },
