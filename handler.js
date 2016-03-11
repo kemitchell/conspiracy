@@ -64,6 +64,7 @@ function handler(request, response) {
               var text = fields['stripped-text']
               var otherMembers = members.filter(function(member) {
                 return ( member !== from.email ) })
+              request.log.info({ event: 'distribute' })
               distribute(otherMembers, subject, text, function(error) {
                 if (error) {
                   request.log.error(error)
