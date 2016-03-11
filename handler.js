@@ -75,7 +75,7 @@ function handler(request, response) {
                   response.statusCode = 200
                   response.end() } }) } } }) } }) }
   else if (method === 'GET') {
-    response.end(( 'conspiracy ' + VERSION + '\n' )) }
+    response.end(( NAME + ' ' + VERSION + '\n' )) }
   else {
     response.statusCode = 405
     response.end() } }
