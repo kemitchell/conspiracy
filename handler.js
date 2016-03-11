@@ -70,11 +70,11 @@ function readPostBody(request, callback) {
   catch (error) {
     callback(error)
     return }
-  busboy
-    .on('field', function(field, value) {
-      fields[field] = value })
-    .on('finish', function() {
-      callback(null, fields) })}
+  busboy.on('field', function(field, value) {
+    fields[field] = value })
+  busboy.once('finish', function() {
+    callback(null, fields) })
+  request.pipe(busboy) }
 
 function readDistributionList(callback) {
   fs.readFile(DISTRIBUTION_LIST, 'utf8', function(error, data) {
