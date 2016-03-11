@@ -94,8 +94,9 @@ function distribute(subject, text, callback) {
       form.append('subject', subject)
       form.append('text', text)
       form.append('o:dkim', 'yes')
-      form.append('o:tacking-clicks', 'no')
-      form.append('o:tacking-opens', 'no')
+      form.append('o:tracking', 'no')
+      form.append('o:tracking-clicks', 'no')
+      form.append('o:tracking-opens', 'no')
       var options =
         { method: 'POST',
           host: 'api.mailgun.net',
