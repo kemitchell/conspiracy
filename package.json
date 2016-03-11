@@ -5,6 +5,7 @@
   "dependencies": {
     "bole": "^2.0.0",
     "busboy": "^0.2.12",
+    "form-data": "^1.0.0-rc3",
     "uuid": "^2.0.1"
   },
   "version": "0.0.0"

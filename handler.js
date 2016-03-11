@@ -7,6 +7,7 @@ var fs = require('fs')
 var https = require('https')
 var querystring = require('querystring')
 var uuid = require('uuid')
+var FormData = require('form-data')
 
 bole.output(
   [ { level: 'debug', stream: process.stdout },
@@ -88,26 +89,25 @@ function distribute(subject, text, callback) {
     if (error) {
       callback(error) }
     else {
-      var body = querystring.stringify(
-        { from: ( 'remailer@' + DOMAIN ),
-          to: recipients.join(','),
-          subject: subject,
-          text: body,
-          'o:dkim': 'yes',
-          'o:tacking-clicks': 'no',
-          'o:tacking-opens': 'no' })
-      var request =
+      var form = new FormData()
+      form.append('from', ( 'remailer@' + DOMAIN ))
+      form.append('to', recipients.join(','))
+      form.append('subject', subject)
+      form.append('text', text)
+      form.append('o:dkim', 'yes')
+      form.append('o:tacking-clicks', 'no')
+      form.append('o:tacking-opens', 'no')
+      var options =
         { method: 'POST',
           host: 'api.mailgun.net',
           path: ( '/v3/' + DOMAIN + '/messages' ),
           auth: ( 'api:' + API_KEY ),
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(body) } }
-      https.request(request, function(response) {
+          headers: form.getHeaders() }
+      var request = https.request(options)
+      request.once('response', function(response) {
         var status = response.statusCode
         if (status == 200) {
           callback() }
         else {
           callback(status) } })
-        .end(body) } }) }
+      form.pipe(request) } }) }
