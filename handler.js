@@ -90,7 +90,7 @@ function distribute(subject, text, callback) {
     else {
       var form = new FormData()
       form.append('from', ( 'remailer@' + DOMAIN ))
-      form.append('to', recipients.join(','))
+      form.append('bcc', recipients.join(','))
       form.append('subject', subject)
       form.append('text', text)
       form.append('o:dkim', 'yes')
