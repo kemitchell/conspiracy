@@ -7,6 +7,7 @@ var fs = require('fs')
 var https = require('https')
 var uuid = require('uuid')
 var FormData = require('form-data')
+var peoplestring = require('peoplestring-parse')
 
 bole.output(
   [ { level: 'debug', stream: process.stdout },
@@ -47,15 +48,29 @@ function handler(request, response) {
             fields: fields })
         var subject = fields.subject
         var body = fields['stripped-text']
-        distribute(subject, body, function(error) {
+        var from = peoplestring(fields.from)
+        readDistributionList(function(error, members) {
           if (error) {
             request.log.error(error)
-            response.statusCode = 500
-            response.end() }
+            request.statusCode = 500
+            request.end() }
           else {
-            request.log.info({ event: 'sent' })
-            response.statusCode = 200
-            response.end() } }) } }) }
+            if (members.indexOf(from.email) < 0) {
+              request.log.info(
+                { event: 'reject',
+                  from: from.email })
+              response.statusCode = 406
+              response.end() }
+            else {
+              distribute(members, subject, body, function(error) {
+                if (error) {
+                  request.log.error(error)
+                  response.statusCode = 500
+                  response.end() }
+                else {
+                  request.log.info({ event: 'sent' })
+                  response.statusCode = 200
+                  response.end() } }) } } }) } }) }
   else if (method === 'GET') {
     response.end(( 'conspiracy ' + VERSION + '\n' )) }
   else {
@@ -83,31 +98,27 @@ function readDistributionList(callback) {
     else {
       callback(null, data.toString().split('\n')) } }) }
 
-function distribute(subject, text, callback) {
-  readDistributionList(function(error, recipients) {
-    if (error) {
-      callback(error) }
+function distribute(members, subject, text, callback) {
+  var form = new FormData()
+  form.append('from', ( 'list@' + DOMAIN ))
+  form.append('bcc', members.join(','))
+  form.append('subject', subject)
+  form.append('text', text)
+  form.append('o:dkim', 'yes')
+  form.append('o:tracking', 'no')
+  form.append('o:tracking-clicks', 'no')
+  form.append('o:tracking-opens', 'no')
+  var options =
+    { method: 'POST',
+      host: 'api.mailgun.net',
+      path: ( '/v3/' + DOMAIN + '/messages' ),
+      auth: ( 'api:' + API_KEY ),
+      headers: form.getHeaders() }
+  var request = https.request(options)
+  request.once('response', function(response) {
+    var status = response.statusCode
+    if (status == 200) {
+      callback() }
     else {
-      var form = new FormData()
-      form.append('from', ( 'list@' + DOMAIN ))
-      form.append('bcc', recipients.join(','))
-      form.append('subject', subject)
-      form.append('text', text)
-      form.append('o:dkim', 'yes')
-      form.append('o:tracking', 'no')
-      form.append('o:tracking-clicks', 'no')
-      form.append('o:tracking-opens', 'no')
-      var options =
-        { method: 'POST',
-          host: 'api.mailgun.net',
-          path: ( '/v3/' + DOMAIN + '/messages' ),
-          auth: ( 'api:' + API_KEY ),
-          headers: form.getHeaders() }
-      var request = https.request(options)
-      request.once('response', function(response) {
-        var status = response.statusCode
-        if (status == 200) {
-          callback() }
-        else {
-          callback(status) } })
-      form.pipe(request) } }) }
+      callback(status) } })
+  form.pipe(request) }
