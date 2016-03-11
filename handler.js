@@ -5,7 +5,6 @@ var path = require('path')
 var Busboy = require('busboy')
 var fs = require('fs')
 var https = require('https')
-var querystring = require('querystring')
 var uuid = require('uuid')
 var FormData = require('form-data')
 
