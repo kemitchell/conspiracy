@@ -11,8 +11,8 @@ var uuid = require('uuid')
 
 bole.output(
   [ { level: 'debug', stream: process.stdout },
-    { level: 'info', stream: process.stdout },
-    { level: 'warn', stream: process.stdout },
+    { level: 'info',  stream: process.stdout },
+    { level: 'warn',  stream: process.stdout },
     { level: 'error', stream: process.stdout } ])
 
 var NAME = require('./package.json').name
