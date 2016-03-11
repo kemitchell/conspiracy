@@ -89,7 +89,7 @@ function distribute(subject, text, callback) {
       callback(error) }
     else {
       var form = new FormData()
-      form.append('from', ( 'remailer@' + DOMAIN ))
+      form.append('from', ( 'list@' + DOMAIN ))
       form.append('bcc', recipients.join(','))
       form.append('subject', subject)
       form.append('text', text)
