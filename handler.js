@@ -47,7 +47,8 @@ function handler(request, response) {
             fields: fields })
         var subject = fields.subject
         var body = fields['stripped-text']
-        distribute(subject, body, function(error) {
+        var attachments = fields.attachments
+        distribute(subject, body, attachments, function(error) {
           if (error) {
             request.log.error(error)
             response.statusCode = 500
@@ -83,7 +84,7 @@ function readDistributionList(callback) {
     else {
       callback(null, data.toString().split('\n')) } }) }
 
-function distribute(subject, text, callback) {
+function distribute(subject, text, attachments, callback) {
   readDistributionList(function(error, recipients) {
     if (error) {
       callback(error) }
@@ -96,6 +97,8 @@ function distribute(subject, text, callback) {
       form.append('o:dkim', 'yes')
       form.append('o:tacking-clicks', 'no')
       form.append('o:tacking-opens', 'no')
+      attachments.forEach(function(attachment) {
+        form.append('attachment', attachment) })
       var options =
         { method: 'POST',
           host: 'api.mailgun.net',
