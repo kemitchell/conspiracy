@@ -1,5 +1,6 @@
 module.exports = handler
 
+var bole = require('bole')
 var path = require('path')
 var Busboy = require('busboy')
 var fs = require('fs')
@@ -7,10 +8,16 @@ var https = require('https')
 var querystring = require('querystring')
 var uuid = require('uuid')
 
+bole.output(
+  [ { level: 'debug', stream: process.stdout },
+    { level: 'info', stream: process.stdout },
+    { level: 'warn', stream: process.stdout },
+    { level: 'error', stream: process.stdout } ])
+
 var NAME = require('./package.json').name
 var VERSION = require('./package.json').version
 
-var log = require('bole')(NAME)
+var log = bole(NAME)
 
 var DOMAIN = process.env.DOMAIN
 
