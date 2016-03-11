@@ -62,7 +62,9 @@ function handler(request, response) {
             else {
               var subject = fields.subject
               var text = fields['stripped-text']
-              distribute(members, subject, text, function(error) {
+              var otherMembers = members.filter(function(member) {
+                return ( member !== from.email ) })
+              distribute(otherMembers, subject, text, function(error) {
                 if (error) {
                   request.log.error(error)
                   response.statusCode = 500
