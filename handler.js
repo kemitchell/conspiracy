@@ -37,20 +37,25 @@ function handler(request, response) {
   var method = request.method
   if (method === 'POST') {
     readPostBody(request, function(error, fields) {
-      request.log.info(
-        { event: 'parsed fields',
-          fields: fields })
-      var subject = fields.subject
-      var body = fields['stripped-text']
-      distribute(subject, body, function(error) {
-        if (error) {
-          request.log.error(error)
-          response.statusCode = 500
-          response.end() }
-        else {
-          request.log.info({ event: 'sent' })
-          response.statusCode = 200
-          response.end() } }) }) }
+      if (error) {
+        request.log.error(error)
+        response.statusCode = 500
+        response.end() }
+      else {
+        request.log.info(
+          { event: 'parsed fields',
+            fields: fields })
+        var subject = fields.subject
+        var body = fields['stripped-text']
+        distribute(subject, body, function(error) {
+          if (error) {
+            request.log.error(error)
+            response.statusCode = 500
+            response.end() }
+          else {
+            request.log.info({ event: 'sent' })
+            response.statusCode = 200
+            response.end() } }) } }) }
   else if (method === 'GET') {
     response.end(( 'conspiracy ' + VERSION + '\n' )) }
   else {
