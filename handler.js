@@ -46,8 +46,6 @@ function handler(request, response) {
         request.log.info(
           { event: 'parsed fields',
             fields: fields })
-        var subject = fields.subject
-        var body = fields['stripped-text']
         var from = peoplestring(fields.from)
         readDistributionList(function(error, members) {
           if (error) {
@@ -62,7 +60,9 @@ function handler(request, response) {
               response.statusCode = 406
               response.end() }
             else {
-              distribute(members, subject, body, function(error) {
+              var subject = fields.subject
+              var text = fields['stripped-text']
+              distribute(members, subject, text, function(error) {
                 if (error) {
                   request.log.error(error)
                   response.statusCode = 500
@@ -101,6 +101,8 @@ function readDistributionList(callback) {
 function distribute(members, subject, text, callback) {
   var form = new FormData()
   form.append('from', ( 'list@' + DOMAIN ))
+  form.append('to', '')
+  form.append('cc', '')
   form.append('bcc', members.join(','))
   form.append('subject', subject)
   form.append('text', text)
