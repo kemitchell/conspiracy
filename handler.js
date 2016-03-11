@@ -93,7 +93,7 @@ function distribute(subject, body, callback) {
           to: recipients.join(',') })
       var request =
         { method: 'POST',
-          host: 'api.mailgun.com',
+          host: 'api.mailgun.net',
           path: ( '/v3/' + DOMAIN + '/messages' ),
           auth: ( 'api:' + API_KEY ),
           headers: {
