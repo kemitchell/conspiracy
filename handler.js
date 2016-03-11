@@ -101,7 +101,7 @@ function readDistributionList(callback) {
 function distribute(members, subject, text, callback) {
   var form = new FormData()
   form.append('from', ( 'list@' + DOMAIN ))
-  form.append('to', '')
+  form.append('to', ( 'list@' + DOMAIN ))
   form.append('cc', '')
   form.append('bcc', members.join(','))
   form.append('subject', subject)
