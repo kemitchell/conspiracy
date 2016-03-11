@@ -5,8 +5,12 @@ var Busboy = require('busboy')
 var fs = require('fs')
 var https = require('https')
 var querystring = require('querystring')
+var uuid = require('uuid')
 
+var NAME = require('./package.json').name
 var VERSION = require('./package.json').version
+
+var log = require('bole')(NAME)
 
 var DOMAIN = process.env.DOMAIN
 
@@ -17,6 +21,12 @@ var DISTRIBUTION_LIST =
     path.join(process.cwd(), 'distribution_list') )
 
 function handler(request, response) {
+  request.log = log(uuid.v4())
+  request.log.info(request)
+  request.once('end', function() {
+    request.log.info(
+      { event: 'end',
+        status: response.statusCode }) })
   var method = request.method
   process.stdout.write(method + '\n')
   if (method === 'POST') {
@@ -25,6 +35,7 @@ function handler(request, response) {
       var body = fields['stripped-text']
       distribute(subject, body, function(error) {
         if (error) {
+          request.log.error(error)
           response.statusCode = 500
           response.end() }
         else {

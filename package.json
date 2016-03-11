@@ -3,7 +3,9 @@
   "private": true,
   "bin": "server.js",
   "dependencies": {
-    "busboy": "^0.2.12"
+    "bole": "^2.0.0",
+    "busboy": "^0.2.12",
+    "uuid": "^2.0.1"
   },
   "version": "0.0.0"
 }
