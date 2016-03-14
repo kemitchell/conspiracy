@@ -7,6 +7,7 @@ var fs = require('fs')
 var https = require('https')
 var path = require('path')
 var peoplestring = require('peoplestring-parse')
+var url = require('url')
 var uuid = require('uuid')
 
 bole.output(
@@ -24,6 +25,8 @@ var DOMAIN = process.env.DOMAIN
 
 var API_KEY = process.env.MAILGUN_API_KEY
 
+var POST_PATH = ( '/' + process.env.POST_PATH )
+
 var DISTRIBUTION_LIST =
   ( process.env.DISTRIBUTION_LIST ||
     path.join(process.cwd(), 'distribution_list') )
@@ -36,48 +39,57 @@ function handler(request, response) {
       { event: 'end',
         status: response.statusCode }) })
   var method = request.method
-  if (method === 'POST') {
-    readPostBody(request, function(error, fields) {
-      if (error) {
-        request.log.error(error)
-        response.statusCode = 500
-        response.end() }
-      else {
-        request.log.info(
-          { event: 'parsed fields',
-            fields: fields })
-        var from = peoplestring(fields.from)
-        readDistributionList(function(error, members) {
-          if (error) {
-            request.log.error(error)
-            request.statusCode = 500
-            request.end() }
-          else {
-            if (members.indexOf(from.email) < 0) {
-              request.log.info(
-                { event: 'reject',
-                  from: from.email })
-              response.statusCode = 406
-              response.end() }
+  var parsedURL = url.parse(request.url)
+  if (parsedURL.pathname === POST_PATH) {
+    if (method === 'POST') {
+      readPostBody(request, function(error, fields) {
+        if (error) {
+          request.log.error(error)
+          response.statusCode = 500
+          response.end() }
+        else {
+          request.log.info(
+            { event: 'parsed fields',
+              fields: fields })
+          var from = peoplestring(fields.from)
+          readDistributionList(function(error, members) {
+            if (error) {
+              request.log.error(error)
+              request.statusCode = 500
+              request.end() }
             else {
-              var subject = fields.subject
-              var text = fields['stripped-text']
-              var otherMembers = members.filter(function(member) {
-                return ( member !== from.email ) })
-              request.log.info({ event: 'distribute' })
-              distribute(otherMembers, subject, text, function(error) {
-                if (error) {
-                  request.log.error(error)
-                  response.statusCode = 500
-                  response.end() }
-                else {
-                  request.log.info({ event: 'sent' })
-                  response.statusCode = 200
-                  response.end() } }) } } }) } }) }
-  else if (method === 'GET') {
-    response.end(( NAME + ' ' + VERSION + '\n' )) }
+              if (members.indexOf(from.email) < 0) {
+                request.log.info(
+                  { event: 'reject',
+                    from: from.email })
+                response.statusCode = 406
+                response.end() }
+              else {
+                var subject = fields.subject
+                var text = fields['stripped-text']
+                var otherMembers = members.filter(function(member) {
+                  return ( member !== from.email ) })
+                request.log.info({ event: 'distribute' })
+                distribute(otherMembers, subject, text, function(error) {
+                  if (error) {
+                    request.log.error(error)
+                    response.statusCode = 500
+                    response.end() }
+                  else {
+                    request.log.info({ event: 'sent' })
+                    response.statusCode = 200
+                    response.end() } }) } } }) } }) }
+    else {
+      request.statusCode = 405
+      request.end() } }
+  else if (parsedURL.pathname === '/') {
+    if (method === 'GET') {
+      response.end(( NAME + ' ' + VERSION + '\n' )) }
+    else {
+      response.statusCode = 415
+      response.end() } }
   else {
-    response.statusCode = 405
+    response.statusCode = 404
     response.end() } }
 
 function readPostBody(request, callback) {
