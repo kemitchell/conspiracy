@@ -76,7 +76,7 @@ function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
       if (method === 'GET') {
         response.end(( NAME + ' ' + VERSION + '\n' )) }
       else {
-        response.statusCode = 415
+        response.statusCode = 405
         response.end() } }
     else {
       response.statusCode = 404
