@@ -57,8 +57,13 @@ function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
                 else {
                   var subject = fields.subject
                   var text = fields['stripped-text']
+                  var reply
+                  JSON.parse(fields['message-headers'])
+                    .forEach(function(header) {
+                      if (header[0] === 'In-Reply-To') {
+                        reply = header[1] } })
                   request.log.info({ event: 'distribute' })
-                  distribute(members, subject, text, function(error) {
+                  distribute(members, subject, text, reply, function(error) {
                     if (error) {
                       request.log.error(error)
                       response.statusCode = 500
@@ -101,12 +106,14 @@ function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
       else {
         callback(null, data.toString().split('\n')) } }) }
 
-  function distribute(members, subject, text, callback) {
+  function distribute(members, subject, text, reply, callback) {
     var form = new FormData()
     form.append('from', ( 'list@' + DOMAIN ))
     form.append('to', ( 'list@' + DOMAIN ))
     form.append('bcc', members.join(','))
     form.append('subject', subject)
+    if (reply) {
+      form.append('h:Reply-To', reply) }
     form.append('text', text)
     form.append('o:dkim', 'yes')
     form.append('o:tracking', 'no')
