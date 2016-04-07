@@ -130,7 +130,7 @@ function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
     form.append('bcc', members.join(','))
     form.append('subject', subject)
     if (reply) {
-      form.append('h:Reply-To', reply) }
+      form.append('h:In-Reply-To', reply) }
     form.append('text', text)
     form.append('o:dkim', 'yes')
     form.append('o:tracking', 'no')
