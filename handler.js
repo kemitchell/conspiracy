@@ -9,27 +9,35 @@ var peoplestring = require('peoplestring-parse')
 var url = require('url')
 var uuid = require('uuid')
 
+// Configure the logging library to write to standard streams.
 bole.output(
   [ { level: 'debug', stream: process.stdout },
     { level: 'info',  stream: process.stdout },
     { level: 'warn',  stream: process.stdout },
     { level: 'error', stream: process.stdout } ])
 
+// Read this package's name and version from package.json.
 var NAME = require('./package.json').name
 var VERSION = require('./package.json').version
 
+// Create a logger with the name of this package.
 var log = bole(NAME)
 
 function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
   return function handler(request, response) {
+    // Create a logger specific to this request, using a UUID.
     request.log = log(uuid.v4())
+    // Log the request itself.
     request.log.info(request)
+    // Log the response to this request.
     request.once('end', function() {
       request.log.info(
         { event: 'end',
           status: response.statusCode }) })
     var method = request.method
     var parsedURL = url.parse(request.url)
+    // If a POST to the hard-to-guess pathname for this server, treat it as an
+    // incoming e-mail routed by Mailgun.
     if (parsedURL.pathname === POST_PATH) {
       if (method === 'POST') {
         readPostBody(request, function(error, fields) {
@@ -42,12 +50,15 @@ function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
               { event: 'parsed fields',
                 fields: fields })
             var from = peoplestring(fields.from)
+            // Read the plain-text distribution list.
             readDistributionList(function(error, members) {
               if (error) {
                 request.log.error(error)
                 request.statusCode = 500
                 request.end() }
               else {
+                // If the sender is not on the distribution list, reject the
+                // e-mail.
                 if (members.indexOf(from.email) < 0) {
                   request.log.info(
                     { event: 'reject',
@@ -56,13 +67,18 @@ function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
                   response.end() }
                 else {
                   var subject = fields.subject
+                  // stripped-text is the plain-text body of the e-mail, less
+                  // any signautre that Mailgun's algorithm strips out.
                   var text = fields['stripped-text']
                   var reply
+                  // If there is an In-Reply-To header, preserve it so that
+                  // mail clients can reconstruct the thread.
                   JSON.parse(fields['message-headers'])
                     .forEach(function(header) {
                       if (header[0] === 'In-Reply-To') {
                         reply = header[1] } })
                   request.log.info({ event: 'distribute' })
+                  // Send the anonymized message to the distribution list.
                   distribute(members, subject, text, reply, function(error) {
                     if (error) {
                       request.log.error(error)
@@ -107,6 +123,7 @@ function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
         callback(null, data.toString().split('\n')) } }) }
 
   function distribute(members, subject, text, reply, callback) {
+    // POST data for the anonymized e-mail to Mailgun.
     var form = new FormData()
     form.append('from', ( 'list@' + DOMAIN ))
     form.append('to', ( 'list@' + DOMAIN ))
