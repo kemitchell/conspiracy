@@ -1,6 +1,8 @@
 {
   "name": "conspiracy",
-  "private": true,
+  "description": "anonymizing private mailing list on Mailgun",
+  "version": "0.0.0",
+  "author": "Kyle E. Mitchell <kyle@kemitchell.com> (https://kemitchell.com/)",
   "bin": "server.js",
   "dependencies": {
     "bole": "^2.0.0",
@@ -9,5 +11,6 @@
     "peoplestring-parse": "^2.0.3",
     "uuid": "^2.0.1"
   },
-  "version": "0.0.0"
+  "license": "MIT",
+  "repository": "kemitchell/conspiracy.js"
 }
