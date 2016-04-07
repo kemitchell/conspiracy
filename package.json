@@ -1,7 +1,7 @@
 {
   "name": "conspiracy",
   "description": "anonymizing private mailing list on Mailgun",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": "Kyle E. Mitchell <kyle@kemitchell.com> (https://kemitchell.com/)",
   "bin": "server.js",
   "dependencies": {
