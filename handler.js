@@ -70,16 +70,18 @@ function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
                   // stripped-text is the plain-text body of the e-mail, less
                   // any signautre that Mailgun's algorithm strips out.
                   var text = fields['stripped-text']
-                  var reply
-                  // If there is an In-Reply-To header, preserve it so that
-                  // mail clients can reconstruct the thread.
-                  JSON.parse(fields['message-headers'])
-                    .forEach(function(header) {
-                      if (header[0] === 'In-Reply-To') {
-                        reply = header[1] } })
+                  // Turn array of headers into a key-value map. If we ever
+                  // need to use mail headers that can repeat, this will need
+                  // to change.
+                  var headers = JSON.parse(fields['message-headers'])
+                    .reduce(
+                      function(headers, headerArray) {
+                        headers[headerArray[0]] = headerArray[1]
+                        return headers },
+                      new Object )
                   request.log.info({ event: 'distribute' })
                   // Send the anonymized message to the distribution list.
-                  distribute(members, subject, text, reply, function(error) {
+                  distribute(members, subject, text, headers, function(error) {
                     if (error) {
                       request.log.error(error)
                       response.statusCode = 500
@@ -122,15 +124,16 @@ function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
       else {
         callback(null, data.toString().split('\n')) } }) }
 
-  function distribute(members, subject, text, reply, callback) {
+  function distribute(members, subject, text, headers, callback) {
     // POST data for the anonymized e-mail to Mailgun.
     var form = new FormData()
     form.append('from', ( 'list@' + DOMAIN ))
     form.append('to', ( 'list@' + DOMAIN ))
     form.append('bcc', members.join(','))
     form.append('subject', subject)
-    if (reply) {
-      form.append('h:In-Reply-To', reply) }
+    ;[ 'In-Reply-To', 'References' ].forEach(function(headerName) {
+      if (headerName in headers) {
+        form.append(( 'h:' + headerName ), headers[headerName]) } })
     form.append('text', text)
     form.append('o:dkim', 'yes')
     form.append('o:tracking', 'no')
