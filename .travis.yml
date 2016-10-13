@@ -2,4 +2,4 @@
 language: node_js
 node_js: node
 sudo: false
-script: npm test
+script: npm run lint
