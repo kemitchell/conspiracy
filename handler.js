@@ -134,6 +134,7 @@ function handlerGenerator(DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST) {
     ;[ 'In-Reply-To', 'References' ].forEach(function(headerName) {
       if (headerName in headers) {
         form.append(( 'h:' + headerName ), headers[headerName]) } })
+    form.append('h:Reply-To', 'list@' + DOMAIN)
     form.append('text', text)
     form.append('o:dkim', 'yes')
     form.append('o:tracking', 'no')
