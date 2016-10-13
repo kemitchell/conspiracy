@@ -12,5 +12,11 @@
     "uuid": "^2.0.1"
   },
   "license": "MIT",
-  "repository": "kemitchell/conspiracy"
+  "repository": "kemitchell/conspiracy",
+  "devDependencies": {
+    "standard": "^8.4.0"
+  },
+  "scripts": {
+    "lint": "standard"
+  }
 }
