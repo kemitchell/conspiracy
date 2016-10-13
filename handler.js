@@ -147,8 +147,9 @@ function handlerGenerator (
   function distribute (members, subject, text, headers, callback) {
     // POST data for the anonymized e-mail to Mailgun.
     var form = new FormData()
-    form.append('from', ('list@' + DOMAIN))
-    form.append('to', ('list@' + DOMAIN))
+    var address = 'list@' + DOMAIN
+    form.append('from', address)
+    form.append('to', address)
     form.append('bcc', members.join(','))
     form.append('subject', subject)
     ;['In-Reply-To', 'References'].forEach(function (headerName) {
@@ -156,7 +157,7 @@ function handlerGenerator (
         form.append(('h:' + headerName), headers[headerName])
       }
     })
-    form.append('h:Reply-To', 'list@' + DOMAIN)
+    form.append('h:Reply-To', address)
     form.append('text', text)
     form.append('o:dkim', 'yes')
     form.append('o:tracking', 'no')
