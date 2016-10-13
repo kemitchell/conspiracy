@@ -105,7 +105,7 @@ function handlerGenerator (
       }
     } else if (parsedURL.pathname === '/') {
       if (method === 'GET') {
-        response.end((NAME + ' ' + VERSION + '\n'))
+        response.end(NAME + ' ' + VERSION + '\n')
       } else {
         response.statusCode = 405
         response.end()
@@ -117,7 +117,7 @@ function handlerGenerator (
   }
 
   function readPostBody (request, callback) {
-    var fields = { }
+    var fields = {}
     var busboy
     try {
       busboy = new Busboy({headers: request.headers})
@@ -154,7 +154,7 @@ function handlerGenerator (
     form.append('subject', subject)
     ;['In-Reply-To', 'References'].forEach(function (headerName) {
       if (headerName in headers) {
-        form.append(('h:' + headerName), headers[headerName])
+        form.append('h:' + headerName, headers[headerName])
       }
     })
     form.append('h:Reply-To', address)
@@ -166,8 +166,8 @@ function handlerGenerator (
     var options = {
       method: 'POST',
       host: 'api.mailgun.net',
-      path: ('/v3/' + DOMAIN + '/messages'),
-      auth: ('api:' + API_KEY),
+      path: '/v3/' + DOMAIN + '/messages',
+      auth: 'api:' + API_KEY,
       headers: form.getHeaders()
     }
     var request = https.request(options)
