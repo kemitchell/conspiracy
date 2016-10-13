@@ -2,34 +2,25 @@ module.exports = handlerGenerator
 
 var Busboy = require('busboy')
 var FormData = require('form-data')
-var bole = require('bole')
 var fs = require('fs')
 var https = require('https')
 var peoplestring = require('peoplestring-parse')
+var pino = require('pino-http')
 var url = require('url')
-var uuid = require('uuid')
-
-// Configure the logging library to write to standard streams.
-bole.output([
-  {level: 'debug', stream: process.stdout},
-  {level: 'info', stream: process.stdout},
-  {level: 'warn', stream: process.stdout},
-  {level: 'error', stream: process.stdout}
-])
 
 // Read this package's name and version from package.json.
 var NAME = require('./package.json').name
 var VERSION = require('./package.json').version
 
 // Create a logger with the name of this package.
-var log = bole(NAME)
+var log = pino()
 
 function handlerGenerator (
   DOMAIN, API_KEY, POST_PATH, DISTRIBUTION_LIST
 ) {
   return function handler (request, response) {
     // Create a logger specific to this request, using a UUID.
-    request.log = log(uuid.v4())
+    log(request, response)
     // Log the request itself.
     request.log.info(request)
     // Log the response to this request.
