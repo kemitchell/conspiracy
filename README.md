@@ -6,7 +6,9 @@ mailing list using the [Mailgun] API.
 [Mailgun]: https://mailgun.com
 
 Private [mailing list] plus [anonymous remailer] equals self-enforcing
-[Chatham House Rule] for e-mail based discussion.
+[Chatham House Rule] for e-mail based discussion.  Only members may
+send to the list.  The list strips signatures and address information
+from every inbound message, and redistributes to each member.
 
 [mailing list]: https://en.wikipedia.org/wiki/Electronic_mailing_list
 
