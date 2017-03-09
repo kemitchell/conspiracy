@@ -15,3 +15,22 @@ from every inbound message, and redistributes to each member.
 [anonymous remailer]: https://en.wikipedia.org/wiki/Anonymous_remailer
 
 [Chatham House Rule]: https://www.chathamhouse.org/about/chatham-house-rule
+
+# Environment Configuration
+
+- `PORT`: port for HTTP server
+
+- `MAILGUN_API_KEY`: Mailgun API credential
+
+  The list will use this key to redistribute messages.
+
+- `DOMAIN`: mailing list domain name.
+
+  The list will redistribute messages `From: list@DOMAIN`.
+
+- `POST_PATH`: a hard-to-guess HTTP request path
+
+  Configure a Mailgun route to post to this path.
+
+- `DISTRIBUTION_LIST`: path of a text file containing a
+  newline-delimited list of list member e-mail addresses
