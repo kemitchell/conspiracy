@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": "kemitchell/conspiracy",
   "devDependencies": {
-    "standard": "^8.4.0"
+    "standard": "^9.0.1"
   },
   "scripts": {
     "lint": "standard"
