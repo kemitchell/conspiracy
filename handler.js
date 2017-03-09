@@ -21,8 +21,6 @@ function handlerGenerator (
   return function handler (request, response) {
     // Create a logger specific to this request, using a UUID.
     log(request, response)
-    // Log the request itself.
-    request.log.info(request)
     // Log the response to this request.
     request.once('end', function () {
       request.log.info({
